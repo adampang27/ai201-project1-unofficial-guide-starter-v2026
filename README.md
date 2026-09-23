@@ -106,30 +106,30 @@ The library being open until 2am is a trap. It's a resource, not a schedule.
 
 ## Sample Answer
 
-<!-- One complete question and answer, pasted as text, with the source line
-     visible. Milestone 4. -->
+**Question:** Where can you go if you need reliable silence to study?
 
-**Question:**
-
-**Answer:**
+**Answer:** According to the documents, if you need reliable silence, the only place that reliably delivers it is the library's third floor (thread_study_spots.txt).
 
 ```
+Sources retrieved: thread_pass_fail.txt, thread_study_spots.txt
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff:** 0.6
 
-<!-- The number you set in config.py, and how you got there.
-
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
+Questions the corpus covers came back between 0.15 and 0.31. Questions it doesn't cover came back between 0.81 and 0.90. 0.6 sits in that gap, so I left THRESHOLD in config.py at 0.6.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| How awesome is it that the library is open until 2 am? | yes | 0.289 |
+| Where can you go if you need reliable silence to study? | yes | 0.283 |
+| When are office hours better than sending an email? | yes | 0.307 |
+| What can commuters rent in the student centre? | yes | 0.310 |
+| When do large employers close summer internship applications? | yes | 0.151 |
+| What is the capital of Mongolia? | no | 0.894 |
+| How do I change the oil in a diesel engine? | no | 0.896 |
+| Who won the 1994 World Cup? | no | 0.893 |
+| What is the recommended dosage of ibuprofen for a headache? | no | 0.807 |
+| How do I write a for loop in Rust? | no | 0.835 |
 
 ## How I Used AI
 
