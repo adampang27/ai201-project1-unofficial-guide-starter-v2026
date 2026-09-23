@@ -22,6 +22,7 @@ to it, write down what you saw, and move on. That's a real observation about
 your pipeline, not giving up.
 """
 
+import re
 from dataclasses import dataclass
 
 import config
@@ -81,23 +82,28 @@ def fallback_split(
 
 
 def split_documents(documents: list[Document]) -> list[Chunk]:
-    """
-    Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
+    """One chunk per reply. The thread title is repeated on each chunk."""
+    chunks: list[Chunk] = []
+    for doc in documents:
+        parts = re.split(r"\n(?=--- reply )", doc.text)
+        title = parts[0].strip()
+        replies = [part.strip() for part in parts[1:]]
+        if not replies:
+            replies = [title]
+            title = ""
 
-    Right now it just calls the fallback. That is the plain, generic behaviour
-    the brief is talking about.
+        for index, reply in enumerate(replies):
+            text = f"{title}\n\n{reply}" if title else reply
+            chunks.append(
+                Chunk(
+                    text=text,
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
 
-    When you write your own strategy, set `produced_by` to
-    "chunker.py::split_documents" so your README's Sample Chunks section names
-    the right function. `app.py chunks` prints that string for you.
-
-    Things worth thinking about before you write any code:
-      - Are your documents short posts or long guides?
-      - Is the useful information in one sentence, or spread over a paragraph?
-      - Would splitting on paragraph breaks keep more thoughts intact than
-        splitting on a character count?
-    """
-    return fallback_split(documents)
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
