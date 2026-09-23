@@ -1,19 +1,6 @@
 # The Unofficial Guide
 
-Adam Pang - advice_threads
-
-> **This file is your submission.** Fill it in as you go — most sections get
-> written during the milestone that produces them, not at the end.
->
-> How the starter works, and every command you'll need, is in `RUNNING.md`.
-> Leave that file alone.
->
-> **Paste everything as text.** No screenshots, no video. A typed table gets
-> full credit; a picture of the same table gets none.
->
-> Delete these instruction blocks as you replace them. The `<!-- -->` comments
-> are notes to you and don't show up when the page renders — you can leave them
-> or remove them.
+Adam Pang - `advice_threads`
 
 ---
 
@@ -21,11 +8,7 @@ Adam Pang - advice_threads
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
-
-     Milestone 5. -->
+This answers questions from advice_threads, a set of 23 forum threads containing student replies. I chose to retrieve the specific reply that supports an answer and name its source so I can trace where each answer came from. If the threads do not contain enough information to answer a question, the system refuses rather than filling in the gap.
 
 ## Chunking Strategy
 
@@ -133,18 +116,9 @@ Questions the corpus covers came back between 0.15 and 0.31. Questions it doesn'
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
-     what you changed about it.
+**1.** I used AI to explore possible ways to chunk the replies, then checked those suggestions against the structure of my own documents. One suggestion was to split on `---` reply and then divide anything over 800 characters into smaller windows. After inspecting the replies and seeing that the longest was only a few hundred characters, I removed the second step because it solved a problem my data did not actually have.
 
-     "I asked Claude to write the chunking function from my notes. It ignored
-     the overlap, so I added that myself" is the level of detail we're after.
-     "I used AI to help me code" is not.
-
-     Milestone 5. -->
-
-**1.**
-
-**2.**
+**2.** I used AI to clarify what chunk size and overlap change, then checked whether those choices fit this corpus. The starter’s overlap was creating tiny extra chunks without preserving useful context, so I set it to 0. Each reply is already a complete answer, and carrying text across replies would mix different students’ advice.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
