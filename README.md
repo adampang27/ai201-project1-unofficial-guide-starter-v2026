@@ -135,27 +135,218 @@ Questions the corpus covers came back between 0.15 and 0.31. Questions it doesn'
 
 ## Run Log — Before
 
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
-
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-
-     Milestone 1. -->
+I ran `python run_eval.py --label before` on September 29 at 23:15.
+It asked each of the five questions three times using `advice_threads`,
+top-k 5, a cutoff of 0.6, and caching off. The
+[results file](results/run_2026-09-29_2315_before.md) was produced by
+`run_eval.py::main` and `run_eval.py::write_report`.
+There's no `scorer.py` yet, so these scores come from reading the saved answers.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunks are complete replies | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. When a thread names more than one place or time, answers include more than one | 4 of 5 | 1/5 | 1/5 | 1/5 | MISSED |
 
-<!-- Underneath, paste the REAL output for each criterion from one of your
-     runs — the actual text your system produced, not a description of it.
-     Name the file and function that produced it. -->
+The report saves source names and distances. I also checked the full chunks
+in the existing index and saved them in the
+[supporting checks](results/before_supporting_checks.md). The sources and
+distances matched the report, and all five questions had a chunk with the
+answer. Retrieval gives the same results each time, so criterion 1 stays
+at 5/5. The gate was tested once, so its 5/5 goes in all three columns.
+For criterion 4, I checked the same five Unit 1 samples three times.
+Each was a full reply with no sentences cut off.
+
+For criterion 5, I counted answers with two or more places, or two or more
+times. Only the internship answer did this, naming October and November,
+so the score is 1/5 in each run. My questions mostly ask for one fact.
+The silence question even asks for a place the source calls the only
+reliable option. Those answers can be correct while naming just one option,
+so these questions are a poor fit for testing this criterion.
+
+The scores stayed the same, but the wording changed in most answers.
+`run_eval.py::run_once` calls `generate.py::answer_from_chunks` with
+`cache=False`, and the run made 15 model calls.
+
+**Criterion 1 — retrieved chunks contain the answer**
+
+These chunks came from `chunker.py::split_documents` and were retrieved
+by `store.py::search`. Each contains the answer to its question:
+
+Question: How awesome is it that the library is open until 2 am? Source: `thread_sleep_schedule.txt#1`.
+
+```text
+THREAD: Everyone says fix your sleep. Does it actually matter?
+
+--- reply 2 (37 votes) ---
+The library being open until 2am is a trap. It's a resource, not a schedule.
+```
+
+Question: Where can you go if you need reliable silence to study? Source: `thread_study_spots.txt#2`.
+
+```text
+THREAD: Best study spots that aren't the library?
+
+--- reply 3 (14 votes) ---
+Depends what you need. If you need silence, the library third floor is the only place that reliably delivers it.
+```
+
+Question: When are office hours better than sending an email? Source: `thread_professor_email.txt#1`.
+
+```text
+THREAD: Do professors actually answer email?
+
+--- reply 2 (33 votes) ---
+Office hours are dramatically more effective than email for anything that takes more than two sentences to answer. They're also usually empty.
+```
+
+Question: What can commuters rent in the student centre? Source: `thread_commuting.txt#1`.
+
+```text
+THREAD: Commuting an hour each way — is it survivable?
+
+--- reply 2 (21 votes) ---
+The commuter lounge in the student centre has lockers you can rent for $20 a year and it changes the experience completely.
+```
+
+Question: When do large employers close summer internship applications? Source: `thread_internship_timing.txt#0`.
+
+```text
+THREAD: When should I start looking for a summer internship?
+
+--- reply 1 (30 votes) ---
+Earlier than feels reasonable. Large employers close applications in October and November for the following summer.
+```
+
+**Criterion 2 — every answer names a source**
+
+Run 1 answers from `generate.py::answer_from_chunks`, saved by
+`run_eval.py::write_report`. Each names a source:
+
+Question: How awesome is it that the library is open until 2 am?
+
+```text
+According to the documents, the library being open until 2am is described as "a trap" and "a resource, not a schedule."
+
+Source: `thread_sleep_schedule.txt`
+```
+
+Question: Where can you go if you need reliable silence to study?
+
+```text
+According to the documents, if you need reliable silence, the library third floor is the only place that reliably delivers it (thread_study_spots.txt).
+```
+
+Question: When are office hours better than sending an email?
+
+```text
+Office hours are more effective than email for anything that takes more than two sentences to answer (thread_professor_email.txt).
+```
+
+Question: What can commuters rent in the student centre?
+
+```text
+Commuters can rent lockers in the student centre for $20 a year (thread_commuting.txt).
+```
+
+Question: When do large employers close summer internship applications?
+
+```text
+Large employers close applications for summer internships in October and November for the following summer.
+
+Source: thread_internship_timing.txt
+```
+
+**Criterion 3 — the gate stops out-of-corpus questions**
+
+Output from `run_eval.py::check_out_of_scope`, which uses `gate.py::check`
+with a cutoff of 0.6:
+
+```text
+Out-of-scope questions (the gate should refuse these):
+  refused  (best distance 0.893)  What is the capital of Mongolia?
+  refused  (best distance 0.896)  How do I change the oil in a diesel engine?
+  refused  (best distance 0.893)  Who won the 1994 World Cup?
+  refused  (best distance 0.807)  What is the recommended dosage of ibuprofen for a headache?
+  refused  (best distance 0.835)  How do I write a for loop in Rust?
+  -> gate refused 5 of 5
+```
+
+**Criterion 4 — chunks are complete replies**
+
+These are the same five samples shown in Unit 1. They came from
+`chunker.py::split_documents`, using the sample selection in
+`app.py::cmd_chunks` with `-n 5`. Each is one complete reply.
+All three checks are saved in the supporting file.
+
+**Chunk 1** — source: `thread_bike_commute.txt#0`; produced by: `chunker.py::split_documents`
+
+```text
+THREAD: Is a bike worth it for a 20 minute walk commute?
+
+--- reply 1 (14 votes) ---
+Yeah. Cuts an 18 minute walk to about 6. The thing nobody mentions is storage — covered bike parking exists at three buildings and is full by 9am at all three.
+```
+
+**Chunk 2** — source: `thread_first_gen.txt#1`; produced by: `chunker.py::split_documents`
+
+```text
+THREAD: Anything specific for first-generation students?
+
+--- reply 2 (41 votes) ---
+The thing I'd say: the unwritten rules are the hard part, not the coursework. Ask about the unwritten rules explicitly. People are happy to explain them and nobody volunteers them.
+```
+
+**Chunk 3** — source: `thread_laptop_specs.txt#2`; produced by: `chunker.py::split_documents`
+
+```text
+THREAD: How much laptop do I actually need for CS courses?
+
+--- reply 3 (12 votes) ---
+I did two years on an 8GB machine and it was fine until the last project, at which point it very much wasn't. 16 is the answer.
+```
+
+**Chunk 4** — source: `thread_parking.txt#1`; produced by: `chunker.py::split_documents`
+
+```text
+THREAD: Worth getting a parking permit?
+
+--- reply 2 (21 votes) ---
+Street parking on Verrill is legal and free and unmarked, which is why half the upper years do it.
+```
+
+**Chunk 5** — source: `thread_sleep_schedule.txt#1`; produced by: `chunker.py::split_documents`
+
+```text
+THREAD: Everyone says fix your sleep. Does it actually matter?
+
+--- reply 2 (37 votes) ---
+The library being open until 2am is a trap. It's a resource, not a schedule.
+```
+
+**Criterion 5 — answers include multiple places or times**
+
+Run 1 answers from `generate.py::answer_from_chunks`, saved by
+`run_eval.py::write_report`:
+
+The study answer names one place:
+
+```text
+According to the documents, if you need reliable silence, the library third floor is the only place that reliably delivers it (thread_study_spots.txt).
+```
+
+The internship answer names two months:
+
+```text
+Large employers close applications for summer internships in October and November for the following summer.
+
+Source: thread_internship_timing.txt
+```
+
+The other three answers each name fewer than two places or times.
+This is the same in all three runs, giving 1/5 each time.
 
 ## Verdicts
 
