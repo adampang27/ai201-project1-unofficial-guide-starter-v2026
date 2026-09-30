@@ -350,22 +350,24 @@ This is the same in all three runs, giving 1/5 each time.
 
 ## Verdicts
 
-<!-- MET or MISSED for each of the five, against the target you wrote last
-     unit — not a new one. Plus a sentence on how you decided. That sentence
-     matters most where it was close.
-
-     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
-     The target has to hold, not show up occasionally.
-
-     Milestone 2. -->
+These verdicts use the original targets in [criteria.md](criteria.md).
+Each target has to hold in all three runs.
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | MET | All five questions had a retrieved chunk with the answer in each run, so 5/5 met the 4/5 target every time. |
+| 2 | Every answer names a source | MET | All 15 saved answers named a source file, giving 5/5 in every run against a target of 5/5. |
+| 3 | The relevance gate stops out-of-corpus questions | MET | The gate blocked all five out-of-scope questions, so its 5/5 result met the 4/5 target and goes in all three columns. |
+| 4 | Chunks are complete replies | MET | All five sampled chunks were complete replies with no sentences cut off in any of the three checks, so 5/5 met the 4/5 target each time. |
+| 5 | When a thread names more than one place or time, answers include more than one | MISSED | Only the internship answer included two times, October and November, so each run was 1/5 against the original 4/5 target. |
+
+Criterion 5 needs the closest look. The strongest case for calling it MET
+is that the answers cover what the questions ask: the silence question,
+for example, asks for a place the source calls the only reliable option.
+One place is enough to answer that question. This shows a problem with
+using these questions to test multiple options. It still doesn't show
+four of five answers meeting the original target, so I kept MISSED.
+I haven't revised any criteria or targets.
 
 ## Diagnoses
 
