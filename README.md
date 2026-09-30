@@ -371,23 +371,53 @@ I haven't revised any criteria or targets.
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
+Only criterion 5 missed. The target was 4 of 5 answers including more than
+one place or time, and the result was 1/5 in all three runs.
 
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
+**Stage: generation.** The model chose the one detail that answered each
+question, even when the retrieved chunks included other places or times.
+This is where the extra options were left out. The prompt in `generate.py`
+says, "Be brief. Two or three sentences is usually enough." It does not
+ask the model to include multiple relevant options. That fits the short
+answers in the results, though the saved runs alone cannot prove that the
+briefness instruction caused them.
 
-     The five stages: loading → chunking → embedding → retrieval → generation.
+For example, I asked, "Where can you go if you need reliable silence to
+study?" The [saved chunks](results/before_supporting_checks.md) included
+the library third floor, library group study rooms, Ridgeway Café before
+10am, and lounges in the science building. `generate.py::build_prompt`
+passes all of those replies to the model. The
+[answer from run 1](results/run_2026-09-29_2315_before.md) was:
 
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
+```text
+According to the documents, if you need reliable silence, the library third floor is the only place that reliably delivers it (thread_study_spots.txt).
+```
 
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
+I checked three possible causes:
 
-     Milestone 3. -->
+1. Loading could have missed the other replies. All four study replies are
+   present in the saved chunks, so that does not explain this example.
+2. Retrieval could have returned only one place. It returned all four,
+   with complete replies, so neither missing results nor cut sentences
+   explains the single place in the answer.
+3. Generation could have picked only the detail that best matched the
+   question. The model had the other replies but named only the third
+   floor, which is what the question about reliable silence called for.
+
+The pattern is the same across the four questions counted as misses.
+The library answer gives the warning about 2am, the study answer gives
+the third floor, the office hours answer gives the two sentence rule,
+and the commuter answer gives lockers. Each focuses on one fact in all
+three runs. The internship answer names October and November, so it is
+the only one that passes the count.
+
+There is a limit to this diagnosis. The study reply calls the third floor
+the only place that reliably delivers silence. The other places are not
+described as equally reliable for that need. Naming one place can be the
+right answer here. The low count comes from narrow questions producing
+focused answers, while criterion 5 expects multiple options. The evidence
+shows where the count drops, but it does not show four wrong answers or
+prove that relevant alternatives were ignored.
 
 ## The Improvement
 
